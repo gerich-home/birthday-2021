@@ -10,7 +10,7 @@
         }
 
         canvas {
-            transform: rotate(90deg) translate(422px, 420px)
+            transform: rotate(90deg) scale(1.8, 1.8) translate(600px, 0px) 
         }
     </style>
 </head>
@@ -150,19 +150,19 @@ function create ()
 async function playAnimations() {
     await play('hello');
     while(true) {
-        for (var i=0; i < 10; i++) {
+        for (var i=0; i < 5; i++) {
             await play('say');
         }
         await delay(1000);
 
-        for (var i=0; i < 10; i++) {
+        for (var i=0; i < 5; i++) {
             await play('wait');
         }
 
         await delay(500);
 
-        player.setVelocityX(20);
-        for (var i=0; i < 10; i++) {
+        player.setVelocityX(40);
+        for (var i=0; i < 40; i++) {
             await play('right');
         }
         player.setVelocityX(0);
@@ -170,8 +170,8 @@ async function playAnimations() {
         player.anims.play('turn', true);
         await delay(500);
 
-        player.setVelocityX(-20);
-        for (var i=0; i < 10; i++) {
+        player.setVelocityX(-40);
+        for (var i=0; i < 40; i++) {
             await play('left');
         }
         player.setVelocityX(0);
