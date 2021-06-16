@@ -44,18 +44,31 @@ var cursors;
 var score = 0;   
 var gameOver = false;
 var scoreText;
+var balloon;
 
 var game = new Phaser.Game(config);
+
+var text = [
+    'Привет, Даша!\n\nВерни пропал!\nДавай попробуем отследить\nего по сигналу!',
+    'Сигнал получен.\nВерни далеко.\nПридётся за ним ехать!\nБежим в машину!',
+    'Материализую сообщение\nс адресом!',
+    'Позвони, как доберёшься!',
+    'Даша, надо найти шифр, но это не так-то просто! Придётся решать задачи! Первая подсказка! Кошка идёт с третьего этажа на шестой, куда она идёт вниз или вверх?'
+];
+
+var self;
 
 function preload ()
 {
     this.load.image('bg', 'assets/bg.jpg');
     this.load.image('ground', 'assets/platform.png');
+    this.load.image('bubble', 'assets/bubble.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 256, frameHeight: 256 });
 }
 
 function create ()
 {
+    self = this;
     //  A simple background for our game
     this.add.image(960, 440, 'bg');
 
@@ -131,9 +144,6 @@ function create ()
 
     //bombs = this.physics.add.group();
 
-    //  The score
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-
     //  Collide the player and the stars with the platforms
     this.physics.add.collider(player, platforms);
     //this.physics.add.collider(stars, platforms);
@@ -144,17 +154,27 @@ function create ()
 
     //this.physics.add.collider(player, bombs, hitBomb, null, this);
 
+    balloon = this.add.image(820, 450, 'bubble');
+    scoreText = this.add.text(400, 280, 'Привет, Даша!', { fontSize: '60px', fill: '#000' });
+
+    setTextVisible(false);
+
     playAnimations();
+}
+
+function setTextVisible(value) {
+    scoreText.visible = value;
+    balloon.visible = value;
 }
 
 async function playAnimations() {
     await play('hello');
-    while(true) {
-        for (var i=0; i < 5; i++) {
-            await play('say');
-        }
-        await delay(1000);
+    await say(text[0]);
+    await say(text[1]);
+    await say(text[2]);
+    await say(text[3]);
 
+    while(true) {
         for (var i=0; i < 5; i++) {
             await play('wait');
         }
@@ -176,6 +196,26 @@ async function playAnimations() {
         }
         player.setVelocityX(0);
     }
+}
+
+async function say(text) {
+    scoreText.setText(text);
+    setTextVisible(true);
+    for (var i=0; i < 5; i++) {
+        await play('say');
+    }
+    await waitClicked();
+    setTextVisible(false);
+}
+
+function waitClicked() {
+    return new Promise((resolve, reject) => {
+        const cb = () => {
+            resolve();
+            self.input.off('pointerdown', cb);
+        };
+        self.input.on('pointerdown', cb);
+    });
 }
 
 function delay(time) {
@@ -201,45 +241,6 @@ function play(key) {
 
 function update ()
 {
-}
-
-function collectStar (player, star)
-{
-    star.disableBody(true, true);
-
-    //  Add and update the score
-    score += 10;
-    scoreText.setText('Score: ' + score);
-
-    if (stars.countActive(true) === 0)
-    {
-        //  A new batch of stars to collect
-        stars.children.iterate(function (child) {
-
-            child.enableBody(true, child.x, 0, true, true);
-
-        });
-
-        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
-        var bomb = bombs.create(x, 16, 'bomb');
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-        bomb.allowGravity = false;
-
-    }
-}
-
-function hitBomb (player, bomb)
-{
-    this.physics.pause();
-
-    player.setTint(0xff0000);
-
-    player.anims.play('turn');
-
-    gameOver = true;
 }
 
 </script>
