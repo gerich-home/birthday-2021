@@ -1,0 +1,88 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Звоним Рони</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            transform: rotate(90deg) scale(1.8, 1.8) translate(600px, 0px) 
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var config = {
+    type: Phaser.AUTO,
+	width: 1820, // window.innerHeight
+	height: 980, // window.innerWidth
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 300 },
+            debug: false
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+var game = new Phaser.Game(config);
+
+var self;
+
+function preload ()
+{
+    this.load.image('call', 'assets/call.png');
+    this.load.image('bg', 'assets/bg.jpg');
+}
+
+function create ()
+{
+    self = this;
+    //  A simple background for our game
+    this.add.image(960, 440, 'bg');
+
+    callRony = this.add.image(820, 450, 'call');
+    playAnimations();
+}
+
+async function playAnimations() {
+    await waitClicked();
+    await delay(1000);
+    window.location = '1.html';
+}
+
+function waitClicked() {
+    return new Promise((resolve, reject) => {
+        const cb = () => {
+            resolve();
+            self.input.off('pointerdown', cb);
+        };
+        self.input.on('pointerdown', cb);
+    });
+}
+
+function delay(time) {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, time);
+    });
+}
+
+function update ()
+{
+}
+
+</script>
+
+</body>
+</html>
